@@ -8,8 +8,6 @@ class RubyRender
   def call(env)
     if Faye::WebSocket.websocket?(env)
       serve_websocket(env)
-    elsif env['PATH_INFO'] == '/favicon.ico'
-      [200, { 'Content-Type' => 'image/ico' }, File.open(File.expand_path('public/favicon.ico'))]
     else
       [200, { 'Content-Type' => 'text/plain' }, ['Hello']]
     end
