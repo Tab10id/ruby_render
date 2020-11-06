@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <title>Ruby Render</title>
+  </head>
+  <body>
+    <canvas id="canvas" width=600 height=300 style="border: solid 1px cornflowerblue">
+      Old browser=(
+    </canvas>
+    <script>
+      let canvas = document.getElementById('canvas');
+      let canvas_context = canvas.getContext('2d');
+      let canvas_buffer = canvas_context.getImageData(0, 0, canvas.width, canvas.height);
+
+      const FillBuffer = function (socket_data) {
+        let offset = 0;
+
+        for(const color of socket_data) {
+          canvas_buffer.data[offset++] = color[0];
+          canvas_buffer.data[offset++] = color[1];
+          canvas_buffer.data[offset++] = color[2];
+          canvas_buffer.data[offset++] = 255;
+        }
+      }
+
+      let socket = new WebSocket('ws://localhost:9292');
+
+      socket.onopen = function() {
+        socket.send('render please');
+      };
+
+      socket.onmessage = function(event) {
+        FillBuffer(JSON.parse(event.data));
+        canvas_context.putImageData(canvas_buffer, 0, 0);
+      };
+
+      socket.onerror = function(error) {
+        console.log(`[error] ${error.message}`);
+      };
+    </script>
+  </body>
+</html>

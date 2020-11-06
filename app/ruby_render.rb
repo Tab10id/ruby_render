@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'faye/websocket'
+require_relative 'controllers/render'
 
 # simple rack app that render html canvas and
 # serve websocket for transfer render data
@@ -19,7 +20,7 @@ class RubyRender
     ws = Faye::WebSocket.new(env)
 
     ws.on :message do |event|
-      ws.send(event.data)
+      ws.send(Controllers::Render.new(event).ray_tracing)
     end
 
     ws.on :close do |_event|
