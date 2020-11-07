@@ -1,0 +1,9 @@
+= What is it?
+
+This is a ruby implementation of
+https://www.gabrielgambetta.com/computer-graphics-from-scratch/introduction.html[Gabriel Gambetta 3d tutorial]
+with a few experiments.
+
+== Why?
+
+Just for fun.
