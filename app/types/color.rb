@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Types
+  # basic RGB-color definition
   class Color
     attr_reader :red, :green, :blue
 
