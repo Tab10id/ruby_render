@@ -1,40 +1,34 @@
 # frozen_string_literal: true
 
+require_relative '../types/color'
+require_relative '../types/point'
+
 module Interactors
   # Very basic raytracer
   class RayTracing
     attr_reader :scene,
-                :image_width,
-                :image_height,
-                :viewport_width,
-                :viewport_height,
+                :image_resolution,
+                :viewport,
                 :projection_distance
 
-    def initialize(scene,
-                   image_width: 600,
-                   image_height: 300,
-                   viewport_width: 2,
-                   viewport_height: 1,
-                   projection_distance: 1)
+    def initialize(scene, image_resolution:, viewport:, projection_distance:)
       @scene = scene
-      @image_width = image_width
-      @image_height = image_height
-      @viewport_width = viewport_width
-      @viewport_height = viewport_height
+      @image_resolution = image_resolution
+      @viewport = viewport
       @projection_distance = projection_distance
     end
 
-    CAMERA_POSITION = [0, 0, 0].freeze
-    BACKGROUND_COLOR = [120, 120, 120].freeze
+    CAMERA_POSITION = Types::Point.new(0, 0, 0).freeze
+    BACKGROUND_COLOR = Types::Color.new(120, 120, 120).freeze
 
     def data
-      half_height = (image_height / 2)
-      half_width = (image_width / 2)
+      half_height = (image_resolution.height / 2)
+      half_width = (image_resolution.width / 2)
 
       (-half_height...half_height).flat_map do |y|
         (-half_width...half_width).map do |x|
           direction = canvas_to_viewport(x.to_f, y.to_f)
-          trace_ray(CAMERA_POSITION, direction)
+          trace_ray(CAMERA_POSITION, direction).components
         end
       end
     end
@@ -42,11 +36,11 @@ module Interactors
     private
 
     def canvas_to_viewport(point_x, point_y)
-      [
-        point_x * viewport_width / image_width,
-        -point_y * viewport_height / image_height,
+      Types::Point.new(
+        point_x * viewport.width / image_resolution.width,
+        -point_y * viewport.height / image_resolution.height,
         projection_distance
-      ]
+      )
     end
 
     def trace_ray(origin, direction)
@@ -76,11 +70,11 @@ module Interactors
     end
 
     def subtract(vector1, vector2)
-      [vector1[0] - vector2[0], vector1[1] - vector2[1], vector1[2] - vector2[2]]
+      Types::Point.new(vector1.x - vector2.x, vector1.y - vector2.y, vector1.z - vector2.z)
     end
 
     def dot_product(vector1, vector2)
-      vector1[0] * vector2[0] + vector1[1] * vector2[1] + vector1[2] * vector2[2]
+      (vector1.x * vector2.x) + (vector1.y * vector2.y) + (vector1.z * vector2.z)
     end
 
     def quadratic_equation(a, b, c) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Naming/MethodParameterName

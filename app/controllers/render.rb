@@ -3,6 +3,7 @@
 require_relative '../presenters/websocket'
 require_relative '../interactors/ray_tracing'
 require_relative '../types/scene'
+require_relative '../types/size'
 
 module Controllers
   # Scene render controller
@@ -20,7 +21,14 @@ module Controllers
     end
 
     def ray_tracing
-      presenter.new(Interactors::RayTracing.new(scene).data).call
+      presenter.new(
+        Interactors::RayTracing.new(
+          scene,
+          image_resolution: Types::Size.new(600, 300),
+          viewport: Types::Size.new(2, 1),
+          projection_distance: 1
+        ).data
+      ).call
     end
 
     private
