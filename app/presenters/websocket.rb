@@ -13,7 +13,7 @@ module Presenters
     end
 
     def call
-      data.to_json
+      data.flat_map { |a| a + [255] }
     end
   end
 end

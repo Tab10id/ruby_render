@@ -11,17 +11,11 @@
     <script>
       let canvas = document.getElementById('canvas');
       let canvas_context = canvas.getContext('2d');
-      let canvas_buffer = canvas_context.getImageData(0, 0, canvas.width, canvas.height);
 
-      const FillBuffer = function (socket_data) {
-        let offset = 0;
-
-        for(const color of socket_data) {
-          canvas_buffer.data[offset++] = color[0];
-          canvas_buffer.data[offset++] = color[1];
-          canvas_buffer.data[offset++] = color[2];
-          canvas_buffer.data[offset++] = 255;
-        }
+      const render = function (arrayBuffer) {
+        const array = new Uint8ClampedArray(arrayBuffer);
+        const imageData = new ImageData(array,  canvas.width, canvas.height);
+        canvas_context.putImageData(imageData, 0, 0);
       }
 
       let socket = new WebSocket('ws://localhost:9292');
@@ -31,8 +25,11 @@
       };
 
       socket.onmessage = function(event) {
-        FillBuffer(JSON.parse(event.data));
-        canvas_context.putImageData(canvas_buffer, 0, 0);
+        if(event.data instanceof Blob) {
+          new Response(event.data).arrayBuffer().then(render);
+        } else {
+          console.log(`[error] wrong data type`);
+        }
       };
 
       socket.onerror = function(error) {
