@@ -3,7 +3,7 @@
 require 'json'
 
 module Presenters
-  # present raw image date as websocket data for render on html canvas
+  # present raw image data as websocket data for render on html canvas
   # @todo: implement data compression
   class Websocket
     attr_reader :data
