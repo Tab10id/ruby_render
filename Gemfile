@@ -8,3 +8,4 @@ gem 'puma', '~> 5.0.3'
 gem 'rack', '~> 2.2.3'
 gem 'rspec', '~> 3.9.0', group: :test
 gem 'rubocop', '~> 1.0.0', group: :development
+gem 'ruby-prof'
