@@ -13,10 +13,9 @@ module Controllers
   # - image file (not implemented yet)
   # - websocket data (for render on html canvas)
   class Render
-    attr_reader :event, :presenter
+    attr_reader :presenter
 
-    def initialize(event)
-      @event = event
+    def initialize
       @presenter = Presenters::Websocket
     end
 
