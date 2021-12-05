@@ -44,14 +44,14 @@ module Interactors
     end
 
     def trace_ray(origin, direction)
-      closest_t = Float::INFINITY
+      closest_crossing = Float::INFINITY
       closest_object = nil
 
       scene.spheres.each do |sphere|
-        t1, t2 = intersect_ray_sphere(origin, direction, sphere)
+        crossing1, crossing2 = intersect_ray_sphere(origin, direction, sphere)
 
-        if (new_closest_t = new_closest_t(t1, t2, closest_t))
-          closest_t = new_closest_t
+        if (new_closest_crossing = new_closest_crossing(crossing1, crossing2, closest_crossing))
+          closest_crossing = new_closest_crossing
           closest_object = sphere
         end
       end
@@ -93,8 +93,8 @@ module Interactors
       [solution1, solution2]
     end
 
-    def new_closest_t(t1, t2, closest_t) # rubocop:disable Naming/MethodParameterName
-      [t1, t2].sort.find { |t| t > projection_distance && t < closest_t }
+    def new_closest_crossing(crossing1, crossing2, closest_crossing)
+      [crossing1, crossing2].sort.find { |c| c > projection_distance && c < closest_crossing }
     end
   end
 end
