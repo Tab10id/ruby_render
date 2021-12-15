@@ -56,25 +56,17 @@ module Interactors
         end
       end
 
-      closest_object ? closest_object.color : BACKGROUND_COLOR
+      closest_object ? color_with_lighting(origin, closest_object, closest_crossing, direction) : BACKGROUND_COLOR
     end
 
     def intersect_ray_sphere(origin, direction, sphere)
-      oc = subtract(origin, sphere.center)
+      oc = origin - sphere.center
 
       quadratic_equation(
-        dot_product(direction, direction),
-        2 * dot_product(oc, direction),
-        dot_product(oc, oc) - sphere.radius**2
+        direction.dot_product(direction),
+        2 * oc.dot_product(direction),
+        oc.dot_product(oc) - sphere.radius**2
       )
-    end
-
-    def subtract(vector1, vector2)
-      Types::Point.new(vector1.x - vector2.x, vector1.y - vector2.y, vector1.z - vector2.z)
-    end
-
-    def dot_product(vector1, vector2)
-      (vector1.x * vector2.x) + (vector1.y * vector2.y) + (vector1.z * vector2.z)
     end
 
     def quadratic_equation(a, b, c) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Naming/MethodParameterName
@@ -95,6 +87,43 @@ module Interactors
 
     def new_closest_crossing(crossing1, crossing2, closest_crossing)
       [crossing1, crossing2].sort.find { |c| c > projection_distance && c < closest_crossing }
+    end
+
+    def color_with_lighting(origin, closest_object, closest_crossing, direction)
+      point = origin + (direction * closest_crossing)
+      normal = point - closest_object.center
+
+      closest_object.color * compute_lighting_intensity(point, normal * (1.0 / normal.length))
+    end
+
+    def compute_lighting_intensity(point, normal)
+      scene.ambient_light +
+        overall_point_light(scene, point, normal) +
+        overall_directional_light(scene, normal)
+    end
+
+    def overall_point_light(scene, p, normal)
+      scene.point_lights.sum do |light|
+        direction = light.position - p
+
+        directional_light(direction, normal, light.intensity)
+      end
+    end
+
+    def overall_directional_light(scene, normal)
+      scene.directional_lights.sum do |light|
+        directional_light(light.direction, normal, light.intensity)
+      end
+    end
+
+    def directional_light(direction, normal, intensity)
+      reflect_rate = normal.dot_product(direction)
+
+      if reflect_rate.positive?
+        (intensity * reflect_rate) / (normal.length * direction.length)
+      else
+        0
+      end
     end
   end
 end

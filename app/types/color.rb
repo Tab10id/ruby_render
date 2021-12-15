@@ -14,5 +14,9 @@ module Types
     def components
       [red, green, blue]
     end
+
+    def *(intensity) # rubocop:disable Naming/BinaryOperatorParameterName
+      Color.new(red * intensity, green * intensity, blue * intensity)
+    end
   end
 end
