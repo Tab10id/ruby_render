@@ -98,19 +98,19 @@ module Interactors
 
     def compute_lighting_intensity(point, normal)
       scene.ambient_light +
-        overall_point_light(scene, point, normal) +
-        overall_directional_light(scene, normal)
+        overall_point_light(point, normal) +
+        overall_directional_light(normal)
     end
 
-    def overall_point_light(scene, p, normal)
+    def overall_point_light(point, normal)
       scene.point_lights.sum do |light|
-        direction = light.position - p
+        direction = light.position - point
 
         directional_light(direction, normal, light.intensity)
       end
     end
 
-    def overall_directional_light(scene, normal)
+    def overall_directional_light(normal)
       scene.directional_lights.sum do |light|
         directional_light(light.direction, normal, light.intensity)
       end
