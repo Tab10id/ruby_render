@@ -5,10 +5,10 @@ require 'benchmark'
 require 'ruby-prof'
 
 scene =
-  Types::Scene.new.tap do |scene|
-    scene.add_sphere([-1, 0, 4], 1, [255, 0, 0])
-    scene.add_sphere([3, 1, 5], 1, [0, 0, 255])
-    scene.add_sphere([-2, 1, 6], 1, [0, 255, 0])
+  Types::Scene.new.tap do |s|
+    s.add_sphere([-1, 0, 4], 1, [255, 0, 0])
+    s.add_sphere([3, 1, 5], 1, [0, 0, 255])
+    s.add_sphere([-2, 1, 6], 1, [0, 255, 0])
   end
 
 def render(scene)
@@ -27,4 +27,4 @@ end
 # not work with truffleruby=(
 result = RubyProf.profile { render(scene) }
 printer = RubyProf::FlatPrinter.new(result)
-printer.print(STDOUT)
+printer.print($stdout)
