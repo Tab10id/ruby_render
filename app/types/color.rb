@@ -2,15 +2,7 @@
 
 module Types
   # basic RGB-color definition
-  class Color
-    attr_reader :red, :green, :blue
-
-    def initialize(red, green, blue)
-      @red = red
-      @green = green
-      @blue = blue
-    end
-
+  Color = Struct.new(:red, :green, :blue) do
     def components
       [red, green, blue]
     end
