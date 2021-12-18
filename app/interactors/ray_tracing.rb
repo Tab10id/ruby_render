@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../types/color'
-require_relative '../types/point'
+require_relative '../types/vector'
 
 module Interactors
   # Very basic raytracer
@@ -18,7 +18,7 @@ module Interactors
       @projection_distance = projection_distance
     end
 
-    CAMERA_POSITION = Types::Point.new(0, 0, 0).freeze
+    CAMERA_POSITION = Types::Vector.new(0, 0, 0).freeze
     BACKGROUND_COLOR = Types::Color.new(120, 120, 120).freeze
 
     def data
@@ -36,7 +36,7 @@ module Interactors
     private
 
     def canvas_to_viewport(point_x, point_y)
-      Types::Point.new(
+      Types::Vector.new(
         point_x * viewport.width / image_resolution.width,
         -point_y * viewport.height / image_resolution.height,
         projection_distance

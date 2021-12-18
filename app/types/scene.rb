@@ -2,7 +2,7 @@
 
 require_relative 'color'
 require_relative 'directional_light'
-require_relative 'point'
+require_relative 'vector'
 require_relative 'point_light'
 require_relative 'sphere'
 
@@ -21,7 +21,7 @@ module Types
     def add_sphere(center, radius, color)
       @spheres <<
         Sphere.new(
-          Types::Point.new(*center),
+          Types::Vector.new(*center),
           radius,
           Types::Color.new(*color)
         )
@@ -32,11 +32,11 @@ module Types
     end
 
     def add_point_light(position:, intensity:)
-      @point_lights << Types::PointLight.new(Types::Point.new(*position), intensity)
+      @point_lights << Types::PointLight.new(Types::Vector.new(*position), intensity)
     end
 
     def add_directional_light(direction:, intensity:)
-      @directional_lights << Types::DirectionalLight.new(Types::Point.new(*direction), intensity)
+      @directional_lights << Types::DirectionalLight.new(Types::Vector.new(*direction), intensity)
     end
   end
 end
