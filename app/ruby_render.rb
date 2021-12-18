@@ -12,7 +12,7 @@ class RubyRender
     if Faye::WebSocket.websocket?(env)
       serve_websocket(env)
     else
-      [200, { 'Content-Type' => 'text/plain' }, ['Hello']]
+      [301, { 'location' => 'index.html' }, []]
     end
   end
 
