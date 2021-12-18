@@ -21,14 +21,9 @@ class RubyRender
   def serve_websocket(env)
     ws = Faye::WebSocket.new(env, [], extensions: [PermessageDeflate])
 
-    ws.on :message do |_event|
-      ws.send(Controllers::Render.new.ray_tracing)
-    end
+    ws.on(:message) { |_event| ws.send(Controllers::Render.new.ray_tracing) }
 
-    loop =
-      EM.add_periodic_timer(0.01) do
-        ws.send(Controllers::Render.new.ray_tracing)
-      end
+    loop = EM.add_periodic_timer(0.01) { ws.send(Controllers::Render.new.ray_tracing) }
 
     ws.on :close do |_event|
       EM.cancel_timer(loop)
