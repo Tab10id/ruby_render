@@ -2,6 +2,7 @@
 
 require_relative '../types/color'
 require_relative '../types/vector'
+require_relative 'ray_tracing/color_processor'
 
 module Interactors
   # Very basic raytracer
@@ -9,13 +10,15 @@ module Interactors
     attr_reader :scene,
                 :image_resolution,
                 :viewport,
-                :projection_distance
+                :projection_distance,
+                :color_processor
 
-    def initialize(scene, image_resolution:, viewport:, projection_distance:)
+    def initialize(scene, image_resolution:, viewport:, projection_distance:, color_processor: nil)
       @scene = scene
       @image_resolution = image_resolution
       @viewport = viewport
       @projection_distance = projection_distance
+      @color_processor = color_processor || RayTracing::ColorProcessor.new(scene)
     end
 
     CAMERA_POSITION = Types::Vector.new(0, 0, 0).freeze
@@ -56,7 +59,7 @@ module Interactors
         end
       end
 
-      closest_object ? color_with_lighting(origin, closest_object, closest_crossing, direction) : BACKGROUND_COLOR
+      closest_object ? color_processor.call(origin, direction, closest_object, closest_crossing) : BACKGROUND_COLOR
     end
 
     def intersect_ray_sphere(origin, direction, sphere)
@@ -87,43 +90,6 @@ module Interactors
 
     def new_closest_crossing(crossing1, crossing2, closest_crossing)
       [crossing1, crossing2].sort.find { |c| c > projection_distance && c < closest_crossing }
-    end
-
-    def color_with_lighting(origin, closest_object, closest_crossing, direction)
-      point = origin + (direction * closest_crossing)
-      normal = point - closest_object.center
-
-      closest_object.color * compute_lighting_intensity(point, normal * (1.0 / normal.length))
-    end
-
-    def compute_lighting_intensity(point, normal)
-      scene.ambient_light +
-        overall_point_light(point, normal) +
-        overall_directional_light(normal)
-    end
-
-    def overall_point_light(point, normal)
-      scene.point_lights.sum do |light|
-        direction = light.position - point
-
-        directional_light(direction, normal, light.intensity)
-      end
-    end
-
-    def overall_directional_light(normal)
-      scene.directional_lights.sum do |light|
-        directional_light(light.direction, normal, light.intensity)
-      end
-    end
-
-    def directional_light(direction, normal, intensity)
-      reflect_rate = normal.dot_product(direction)
-
-      if reflect_rate.positive?
-        (intensity * reflect_rate) / (normal.length * direction.length)
-      else
-        0
-      end
     end
   end
 end
