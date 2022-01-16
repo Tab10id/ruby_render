@@ -15,12 +15,12 @@ module Interactors
                 :tracer,
                 :color_processor
 
-    def initialize(scene, image_resolution:, viewport:, projection_distance:, tracer: nil,  color_processor: nil)
+    def initialize(scene, image_resolution:, viewport:, projection_distance:, color_processor: nil)
       @scene = scene
       @image_resolution = image_resolution
       @viewport = viewport
       @projection_distance = projection_distance
-      @tracer = tracer || RayTracing::Tracer.new(scene: scene, projection_distance: projection_distance)
+      @tracer = RayTracing::Tracer.new(scene: scene, projection_distance: projection_distance)
       @color_processor = color_processor || RayTracing::ColorProcessor.new(scene: scene)
     end
 
