@@ -33,14 +33,26 @@ module Interactors
 
       (-half_height...half_height).flat_map do |y|
         (-half_width...half_width).map do |x|
-          direction = canvas_to_viewport(x.to_f, y.to_f)
-          closest_sphere, distance = tracer.call(CAMERA_POSITION, direction)
-          color(closest_sphere, direction, distance).components
+          pixel_color(x, y)
         end
       end
     end
 
     private
+
+    def pixel_color(x, y) # rubocop:disable Naming/MethodParameterName
+      direction = canvas_to_viewport(x.to_f, y.to_f)
+      closest_sphere, distance = tracer.call(CAMERA_POSITION, direction)
+
+      color =
+        if closest_sphere
+          color_processor.call(CAMERA_POSITION, direction, closest_sphere, distance)
+        else
+          BACKGROUND_COLOR
+        end
+
+      color.components
+    end
 
     def canvas_to_viewport(point_x, point_y)
       Types::Vector.new(
@@ -48,14 +60,6 @@ module Interactors
         -point_y * viewport.height / image_resolution.height,
         projection_distance
       )
-    end
-
-    def color(closest_sphere, direction, distance)
-      if closest_sphere
-        color_processor.call(CAMERA_POSITION, direction, closest_sphere, distance)
-      else
-        BACKGROUND_COLOR
-      end
     end
   end
 end
