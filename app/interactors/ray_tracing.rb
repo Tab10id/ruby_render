@@ -2,6 +2,7 @@
 
 require_relative '../types/color'
 require_relative '../types/vector'
+require_relative 'ray_tracing/tracer'
 require_relative 'ray_tracing/color_processor'
 
 module Interactors
@@ -18,7 +19,7 @@ module Interactors
       @image_resolution = image_resolution
       @viewport = viewport
       @projection_distance = projection_distance
-      @color_processor = color_processor || RayTracing::ColorProcessor.new(scene)
+      @color_processor = color_processor || RayTracing::ColorProcessor.new(scene: scene)
     end
 
     CAMERA_POSITION = Types::Vector.new(0, 0, 0).freeze

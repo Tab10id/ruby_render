@@ -6,15 +6,15 @@ module Interactors
     class ColorProcessor
       attr_reader :scene
 
-      def initialize(scene)
+      def initialize(scene:)
         @scene = scene
       end
 
-      def call(origin, direction, closest_object, closest_crossing)
-        point = origin + (direction * closest_crossing)
-        normal = point - closest_object.center
+      def call(origin, direction, sphere, distance)
+        point = origin + (direction * distance)
+        normal = point - sphere.center
 
-        closest_object.color * compute_lighting_intensity(point, normal * (1.0 / normal.length))
+        sphere.color * compute_lighting_intensity(point, normal * (1.0 / normal.length))
       end
 
       private
