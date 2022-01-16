@@ -2,7 +2,7 @@
 
 module Interactors
   class RayTracing
-    #
+    # compute color for some point of sphere
     class ColorProcessor
       attr_reader :scene
 
